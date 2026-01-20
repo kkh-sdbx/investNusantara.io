@@ -10,14 +10,20 @@
       crossorigin=""/>
     <style>
         #map { 
-            height: 60%; 
-            width: 60%; 
+            height: 60vh; 
+            width: 60vw; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.1); /* 그림자를 주면 더 전문적으로 보입니다 */
+            border-radius: 12px; /* 모서리를 살짝 깎으면 MVP 느낌이 납니다 */
         } /* 전체 화면 지도 */
         body { 
             height: 100%; 
-            width: 100%;
+            width: 100vw;
             margin: 0; 
             padding: 0; 
+            display: flex; /* 지도를 가운데 정렬하고 싶을 때 유용합니다 */
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f4; 
         }
     </style>
 </head>
