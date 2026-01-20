@@ -24,7 +24,9 @@
         crossorigin=""></script>
     <script>
         // 1. 지도 초기화 (누산타라 좌표: -0.83, 116.69)
-        
+        const southWest = L.latLng(-0.950, 116.600);
+        const northEast = L.latLng(-0.750, 116.850);
+        const bounds = L.latLngBounds(southWest, northEast);
 
         const map = L.map('map', {
             center: [-0.844, 116.711],
@@ -34,9 +36,7 @@
             maxBounds: bounds,         // 영역 이탈 방지
             maxBoundsViscosity: 1.0    // 경계에 닿으면 튕겨져 나가지 않게 고정
         });
-        const southWest = L.latLng(-0.950, 116.600);
-        const northEast = L.latLng(-0.750, 116.850);
-        const bounds = L.latLngBounds(southWest, northEast);
+        
 
         // 2. 무료 OSM 타일 레이어 추가
        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
