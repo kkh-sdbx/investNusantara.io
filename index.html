@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-
-    <meta charset="UTF-8"name="referrer" content="no-referrer-when-downgrade">
+    <meta charset="UTF-8" >
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <title>IKN Nusantara Real Estate MVP</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
@@ -25,12 +25,17 @@
         const map = L.map('map').setView([-0.83, 116.69], 13);
 
         // 2. 무료 OSM 타일 레이어 추가
+        /*
         L.tileLayer('https://{s}.basemaps.cartocdn.com/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org">OpenStreetMap</a> contributors &copy; <a href="https://carto.com">CARTO</a>',
             subdomains: 'abcd',
             maxZoom: 20
         }).addTo(map);
-
+        */
+       L.tileLayer('https://tile.openstreetmap.org{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
         // 3. 백엔드 연결 전 샘플 데이터로 테스트
         const mockupData = [
             { id: 1, name: "대통령궁 예정지", pos: [-0.836, 116.690], info: "2026년 완공 예정" },
