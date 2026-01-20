@@ -24,8 +24,8 @@
         const map = L.map('map').setView([-0.83, 116.69], 13);
 
         // 2. 무료 OSM 타일 레이어 추가
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+        L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap, © CARTO'
         }).addTo(map);
 
         // 3. 백엔드 연결 전 샘플 데이터로 테스트
