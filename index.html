@@ -66,6 +66,13 @@
             L.marker(item.pos).addTo(map)
                 .bindPopup(`<b>${item.name}</b><br>${item.info}`);
         });
+
+        let investZone = L.rectangle([
+            [-0.840, 116.685], // 좌측 상단
+            [-0.860, 116.720]  // 우측 하단
+        ], {color: "#ff7800", weight: 1, fillOpacity: 0.3}).addTo(map);
+
+        investZone.bindPopup("Zone 예시");
     </script>
 </body>
 </html>
