@@ -6,9 +6,153 @@ javascript
 setTimeout(function(){ map.invalidateSize(); }, 200);
 
 
+<넣을만한 정보들>
+1. 구역별 투자 정보 오버레이 (Zoning)
+현재 코드의 investZone처럼 구역을 시각화하되, 각 구역의 성격에 맞는 데이터를 추가해 보세요.
+정부 핵심 구역(KIPP): 대통령궁, 정부 청사 등 공공 기관 위치.
+주거 구역: 공무원 및 일반 거주 예정지 비율.
+상업/비즈니스 구역: 면세 혜택이나 투자 인센티브가 적용되는 구역 표시.
+녹지 비율: 누산타라의 핵심 컨셉인 '포레스트 시티'에 맞춘 녹지 보존 구역.
+
+2. 시계열 변화 타임라인 (Progress Tracking)
+신도시는 '미래 가치'가 중요합니다. 사용자가 지도 위에서 개발 단계를 볼 수 있게 하세요.
+연도별 레이어: 2024년(기초 공사), 2026년(본격 이주), 2030년(인프라 완성) 등 슬라이더를 조절하면 지도 위의 건물 마커나 구역이 추가되도록 구현.
+공정률 표시: 마커 클릭 시 현재 공사 진행 상황(%)과 실시간 현장 사진 링크 제공.
+
+3. 법규 및 투자 가이드 (Legal & Policy)
+외국인 투자자에게 가장 장벽이 높은 것은 인도네시아 토지법입니다.
+소유권 안내: 코드에 언급하신 HGB(건축권) 160년 보장 내용이나 Hak Pakai(사용권)에 대한 쉬운 설명.
+골든 비자 정보: 일정 금액 이상 투자 시 부여되는 장기 체류 비자 조건 안내.
+세제 혜택: IKN 특별법에 따른 법인세 면제 기간 등을 대시보드 형태로 제공.
+
+4. 시세 분석 및 모의 계산기 (Calculator)
+가격 트렌드: 주변 도시(발릭파판 등) 대비 예상 지가 상승률 그래프.
+수익률 계산기: 투자 금액 입력 시 취득세(BPHTB), 공증료, 관리비 등을 제외한 예상 순수익 계산.
 
 
-1. 방금 답변에 예시 코드도 넣어서 작성해 줘
-2. 사실 누산타라라는 도시 한 군데만 서비스하면, API 호출 데이터를 서버에 저장해버릴 수도 있을걸. 24hrs cron job으로 호출을 최소화하고 JSON으로 클라이언트 egress만 해 주는 방식 검토
+<정보 출처>
+2. 누산타라 투자 정보 및 공식 자료 사이트
+2026년 현재 신수도 이전이 활발히 진행 중이므로, 가장 정확한 정보는 인도네시아 정부 공식 채널에서 확인해야 합니다.
+IKN 공식 홈페이지 (OIKN): ikn.go.id - 가장 권위 있는 사이트로 마스터플랜, 최신 뉴스, 법규(Law No. 3/2022) 등을 확인할 수 있습니다.
+인도네시아 투자부 (BKPM): investindonesia.go.id - 외국인 투자자를 위한 세제 혜택(Tax Holiday), 인센티브 및 온라인 투자 허가 시스템(OSS) 정보를 제공합니다.
+IKN 투자 포털 (Invest IKN): invest.ikn.go.id - 특정 프로젝트별 입찰 정보나 구역별 세부 투자 가이드를 제공하는 전용 포털입니다.
+인도네시아 국영 건설사 (PUPR): pu.go.id - 공공사업주택부 사이트로 도로, 댐, 교량 등 인프라 공정률 현황을 파악하기 좋습니다.
+추가 팁: 프로젝트의 신뢰도를 높이고 싶다면 IKN 공식 유튜브 채널에서 제공하는 드론 촬영 영상을 통해 실제 공사 현황 이미지를 크롤링하거나 캡처하여 대시보드 이미지로 활용해 보세요.
 
-=> AI 답변. 
+<정보 from =  https://ikn.go.id/en/about-ikn>
+Nusantara
+The 'nerve center' for the Central Government and a center for green innovation
+
+Samarinda
+The 'heart' of the region due to its status as East Kalimantan's historic center which boasts a renewable energy sector
+
+Balikpapan
+The 'muscle' of the region due to its status as a crucial upstream point for the oil & gas industry and is also East Kalimantan's logistical hub.
+
+Kalimantan Timur
+The 'lungs' of the region by strengthening its upstream agricultural sector and become an ecotourism hub. The collective partnership between the three regions stated will become a catalyst for East Kalimantan's further development.
+
+
+TOWARDS 2045
+The Nusantara Capital City (IKN) will help Indonesia achieve its target of becoming a developed country by 2045, as outlined in the Indonesia 2045 Vision. Built with the notion of national identity, the IKN will change the orientation of development to become more Indonesia-centric and accelerate the country's economic transformation. 
+
+<>
+https://oss.go.id/id/panduan/647083e5d033753dd77d89cd
+=> 허가 관련 원클릭 서비스
+
+6
+ECONOMIC
+CLUSTERS
+Clean Technology Industry Cluster
+Integrated Pharmaceutical Industry Cluster
+Sustainable Agriculture Industry
+Ecotourism and Health Tourism Cluster
+Chemical Products and Byproducts Cluster
+Low Carbon Energy Cluster
+2
+SUPPORTING
+CLUSTERS
+A 21st-Century Education Cluster
+Smart City and Industry 4.0 Centre
+
+
+<from = https://ikn.go.id/en/investment-progress>
+12 Investment Potential Sectors
+Nusantara Capital City is built with a vision of sustainability and
+innovation, supported by 12 potential sectors that are still open:
+
+
+Renewable
+Energy
+
+
+Telecomunication
+Network
+
+
+Transportation
+
+
+Housing
+
+
+Water
+Management
+
+
+Waste
+Management
+
+
+Technology
+Infrastructure
+
+
+Commercial
+Infrastructure
+
+
+Medical
+Facility
+
+
+Social and Public
+Facility
+
+
+Education
+Facility
+
+
+Green Industrial
+Area
+
+Investment Progress
+Private Investment
+Rp 62,43 T
+
+Government and
+State-owned Enterprises Investment
+Rp 130,93 T
+
+State Budget
+Rp 72,2 T
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
