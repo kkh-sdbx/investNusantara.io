@@ -1,78 +1,226 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" >
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer-when-downgrade">
     <title>IKN Nusantara Real Estate MVP</title>
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
       crossorigin=""/>
     <style>
-        #map { 
-            height: 60vh; 
-            width: 60vw; 
-            box-shadow: 0 0 20px rgba(0,0,0,0.1); /* 그림자를 주면 더 전문적으로 보입니다 */
-            border-radius: 12px; /* 모서리를 살짝 깎으면 MVP 느낌이 납니다 */
-        } /* 전체 화면 지도 */
+        /* 1. 기본 초기화 (모바일 최적화) */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
-            height: 100%; 
-            width: 100vw;
-            margin: 0; 
-            padding: 0; 
-            display: flex; /* 지도를 가운데 정렬하고 싶을 때 유용합니다 */
-            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            overflow: hidden; /* 스크롤 방지 */
+            background-color: #e5e5e5;
+        }
+
+        /* 2. 전체 화면 지도 */
+        #map { 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw; 
+            height: 100vh; 
+            z-index: 1; /* 가장 아래에 깔림 */
+        }
+
+        /* 3. 상단 플로팅 헤더 (앱 스타일 검색창 느낌) */
+        .floating-header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            z-index: 1000; /* 지도 위에 띄움 */
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a252f;
+            display: flex;
             align-items: center;
-            background-color: #f4f4f4; 
+            gap: 8px;
+            width: 90%;
+            max-width: 400px;
+            justify-content: center;
+        }
+        .floating-header span { color: #3498db; }
+
+        /* 4. 바텀 시트 (Bottom Sheet) */
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60vh; /* 열렸을 때 화면의 60% 차지 */
+            background: white;
+            border-radius: 24px 24px 0 0; /* 위쪽 모서리만 둥글게 */
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+            /* 핵심: 평소에는 밑으로 숨겨두고 상단 70px(헤더)만 보이게 함 */
+            transform: translateY(calc(100% - 70px)); 
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 부드러운 애니메이션 */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 바텀 시트가 열렸을 때의 클래스 */
+        .bottom-sheet.expanded {
+            transform: translateY(0);
+        }
+
+        /* 바텀 시트 헤더 (터치 영역) */
+        .sheet-header {
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .drag-handle {
+            width: 40px;
+            height: 5px;
+            background-color: #ddd;
+            border-radius: 3px;
+            margin-bottom: 8px;
+        }
+        .sheet-title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+
+        /* 바텀 시트 내부 컨텐츠 영역 */
+        .sheet-content {
+            padding: 20px;
+            overflow-y: auto; /* 내부 스크롤 허용 */
+            flex: 1;
+        }
+
+        /* 컨텐츠 디자인 (이전과 동일하지만 여백 최적화) */
+        .info-block { margin-bottom: 24px; }
+        .info-block h2 { font-size: 1rem; color: #2c3e50; margin-bottom: 12px; }
+        .info-list { list-style: none; }
+        .info-list li {
+            font-size: 0.9rem;
+            padding: 12px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 3px solid #3498db;
+        }
+        .disclaimer {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            border: 1px solid #ffeeba;
+        }
+
+        /* Leaflet 줌 컨트롤 위치 조정 (바텀 시트에 가리지 않게 위로 올림) */
+        .leaflet-bottom.leaflet-right {
+            bottom: 90px !important;
         }
     </style>
 </head>
 <body>
+
+    <div class="floating-header">
+        📍 <span>invest</span>Nusantara.io
+    </div>
+
     <div id="map"></div>
 
-    <!-- Leaflet JS -->
+    <div class="bottom-sheet" id="bottomSheet">
+        <div class="sheet-header" id="sheetHeader">
+            <div class="drag-handle"></div>
+            <div class="sheet-title">투자 정보 및 최신 뉴스 보기</div>
+        </div>
+        
+        <div class="sheet-content">
+            <div class="info-block">
+                <h2>📜 관련 법령 및 혜택 요약</h2>
+                <ul class="info-list">
+                    <li><strong>토지사용권(HGB):</strong> 최초 80년 + 연장 80년 보장</li>
+                    <li><strong>외국인 소유권:</strong> 조건부 아파트 및 주택 소유 허용</li>
+                </ul>
+            </div>
+
+            <div class="info-block">
+                <h2>📰 최신 동향</h2>
+                <ul class="info-list">
+                    <li>[동향] 신수도청(OIKN), 핵심 구역 1단계 인프라 공정률 70% 돌파</li>
+                    <li>[투자] 글로벌 컨소시엄, 에너지/수자원 개발 MOU 체결</li>
+                </ul>
+            </div>
+
+            <div class="disclaimer">
+                <strong>⚠️ Disclaimer</strong><br>
+                본 지도에 표시된 위치 및 데이터는 MVP 샘플이며 실제 법적, 재무적 지표로 활용될 수 없습니다.
+            </div>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
         crossorigin=""></script>
     <script>
-        // 1. 지도 초기화 (누산타라 좌표: -0.83, 116.69)
-        const southWest = L.latLng(-0.950, 116.600);
-        const northEast = L.latLng(-0.750, 116.850);
-        const bounds = L.latLngBounds(southWest, northEast);
+        // --- 1. 바텀 시트 토글 로직 ---
+        const bottomSheet = document.getElementById('bottomSheet');
+        const sheetHeader = document.getElementById('sheetHeader');
+        let isExpanded = false;
 
+        // 손잡이 부분을 클릭하면 열리고 닫히도록 설정
+        sheetHeader.addEventListener('click', () => {
+            isExpanded = !isExpanded;
+            if (isExpanded) {
+                bottomSheet.classList.add('expanded');
+                sheetHeader.querySelector('.sheet-title').innerText = "내려놓기 ▼";
+            } else {
+                bottomSheet.classList.remove('expanded');
+                sheetHeader.querySelector('.sheet-title').innerText = "투자 정보 및 최신 뉴스 보기 ▲";
+            }
+        });
+
+        // --- 2. Leaflet 지도 로직 ---
         const map = L.map('map', {
             center: [-0.844, 116.711],
             zoom: 13,
             minZoom: 11,
             maxZoom: 18,
-            maxBounds: bounds,         // 영역 이탈 방지
-            maxBoundsViscosity: 1.0    // 경계에 닿으면 튕겨져 나가지 않게 고정
+            zoomControl: false // 커스텀 위치를 위해 기본 숨김
         });
-        
 
-        // 2. 무료 OSM 타일 레이어 추가
-       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        // 줌 컨트롤 우측 하단으로 (바텀 시트에 안 가리게 CSS로 bottom 조정됨)
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         }).addTo(map);
-        // 3. 백엔드 연결 전 샘플 데이터로 테스트
+
+        // 마커 및 팝업 추가
         const mockupData = [
-            { id: 1, name: "대통령궁 예정지", pos: [-0.836, 116.690], info: "2026년 완공 예정" },
-            { id: 2, name: "외국인 투자 1구역", pos: [-0.850, 116.710], info: "HGB 160년 보장 구역" }
+            { id: 1, name: "대통령궁 예정지", pos: [-0.836, 116.690], info: "1단계 개발 핵심 구역" },
+            { id: 2, name: "외국인 투자 1구역", pos: [-0.850, 116.710], info: "HGB 160년 보장 대상지" }
         ];
 
-        // 4. 데이터 뿌리기
         mockupData.forEach(item => {
-            L.marker(item.pos).addTo(map)
-                .bindPopup(`<b>${item.name}</b><br>${item.info}`);
+            L.marker(item.pos).addTo(map).bindPopup(`<b>${item.name}</b><br>${item.info}`);
         });
 
-        let investZone = L.rectangle([
-            [-0.840, 116.685], // 좌측 상단
-            [-0.860, 116.720]  // 우측 하단
-        ], {color: "#ff7800", weight: 1, fillOpacity: 0.3}).addTo(map);
-
-        investZone.bindPopup("Zone 예시");
+        // 폴리곤 구역 추가
+        L.rectangle([[-0.840, 116.685], [-0.860, 116.720]], {
+            color: "#ff7800", weight: 2, fillOpacity: 0.15
+        }).addTo(map).bindPopup("특별 경제 구역 예시");
     </script>
 </body>
 </html>
