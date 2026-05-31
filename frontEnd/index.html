@@ -9,71 +9,64 @@
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
       crossorigin=""/>
     <style>
-        /* 1. 기본 초기화 (모바일 최적화) */
+        /* 기본 초기화 */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            overflow: hidden; /* 스크롤 방지 */
-            background-color: #e5e5e5;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow: hidden;
+            background-color: #0b1220;
+            color: #ffffff;
         }
 
-        /* 2. 전체 화면 지도 */
+        /* 지도 */
         #map { 
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw; 
-            height: 100vh; 
-            z-index: 1; /* 가장 아래에 깔림 */
+            inset: 0;
+            z-index: 1;
         }
 
-        /* 3. 상단 플로팅 헤더 (앱 스타일 검색창 느낌) */
+        /* 헤더 */
         .floating-header {
             position: absolute;
             top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: white;
-            padding: 12px 24px;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            z-index: 1000; /* 지도 위에 띄움 */
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #1a252f;
+            left: 20px;
+            background: rgba(10,15,25,.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,.08);
+            padding: 16px 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,.35);
             display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 90%;
-            max-width: 400px;
-            justify-content: center;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 1000;
         }
-        .floating-header span { color: #3498db; }
+        .brand-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .brand-title span { color: #d4af37; }
+        .brand-sub { font-size: .75rem; opacity: .75; letter-spacing: .5px; }
 
-        /* 4. 바텀 시트 (Bottom Sheet) */
+        /* 바텀 시트 */
         .bottom-sheet {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 60vh; /* 열렸을 때 화면의 60% 차지 */
-            background: white;
-            border-radius: 24px 24px 0 0; /* 위쪽 모서리만 둥글게 */
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
-            z-index: 1000;
-            /* 핵심: 평소에는 밑으로 숨겨두고 상단 70px(헤더)만 보이게 함 */
+            height: 60vh;
+            background: linear-gradient(180deg, rgba(8,14,24,.98), rgba(12,18,32,.98));
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.35);
             transform: translateY(calc(100% - 70px)); 
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 부드러운 애니메이션 */
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
+            z-index: 1000;
         }
+        .bottom-sheet.expanded { transform: translateY(0); }
 
-        /* 바텀 시트가 열렸을 때의 클래스 */
-        .bottom-sheet.expanded {
-            transform: translateY(0);
-        }
-
-        /* 바텀 시트 헤더 (터치 영역) */
         .sheet-header {
             height: 70px;
             display: flex;
@@ -82,59 +75,56 @@
             justify-content: center;
             cursor: pointer;
             position: relative;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid rgba(255,255,255,.08);
         }
-        .drag-handle {
-            width: 40px;
-            height: 5px;
-            background-color: #ddd;
-            border-radius: 3px;
-            margin-bottom: 8px;
-        }
-        .sheet-title {
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 1rem;
-        }
+        .drag-handle { width: 40px; height: 5px; background-color: #555; border-radius: 3px; margin-bottom: 8px; }
+        .sheet-title { color: #ffffff; font-weight: 600; font-size: 1rem; }
 
-        /* 바텀 시트 내부 컨텐츠 영역 */
-        .sheet-content {
-            padding: 20px;
-            overflow-y: auto; /* 내부 스크롤 허용 */
-            flex: 1;
-        }
+        .sheet-content { padding: 20px; overflow-y: auto; flex: 1; }
 
-        /* 컨텐츠 디자인 (이전과 동일하지만 여백 최적화) */
+        /* KPI 카드 */
+        .kpi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 24px; }
+        .kpi-card {
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .kpi-value { font-size: 1.4rem; font-weight: 700; color: #d4af37; }
+        .kpi-label { font-size: .8rem; opacity: .7; }
+
+        /* 정보 블록 */
         .info-block { margin-bottom: 24px; }
-        .info-block h2 { font-size: 1rem; color: #2c3e50; margin-bottom: 12px; }
+        .info-block h2 { font-size: 1rem; color: #ffffff; margin-bottom: 12px; }
         .info-list { list-style: none; }
         .info-list li {
             font-size: 0.9rem;
             padding: 12px;
-            background: #f8f9fa;
+            background: rgba(255,255,255,.04);
             margin-bottom: 8px;
             border-radius: 8px;
-            border-left: 3px solid #3498db;
+            border-left: 3px solid #d4af37;
+            color: white;
         }
         .disclaimer {
-            background-color: #fff3cd;
-            color: #856404;
+            background-color: #2b1e0f;
+            color: #d4af37;
             padding: 12px;
             border-radius: 8px;
             font-size: 0.8rem;
-            border: 1px solid #ffeeba;
+            border: 1px solid rgba(255,255,255,.08);
         }
 
-        /* Leaflet 줌 컨트롤 위치 조정 (바텀 시트에 가리지 않게 위로 올림) */
-        .leaflet-bottom.leaflet-right {
-            bottom: 90px !important;
-        }
+        /* Leaflet 줌 컨트롤 위치 */
+        .leaflet-bottom.leaflet-right { bottom: 90px !important; }
     </style>
 </head>
 <body>
 
     <div class="floating-header">
-        📍 <span>invest</span>Nusantara.io
+        <div class="brand-title">INVEST<span>NUSANTARA</span>.IO</div>
+        <div class="brand-sub">Investment Intelligence Platform</div>
     </div>
 
     <div id="map"></div>
@@ -142,10 +132,26 @@
     <div class="bottom-sheet" id="bottomSheet">
         <div class="sheet-header" id="sheetHeader">
             <div class="drag-handle"></div>
-            <div class="sheet-title">투자 정보 및 최신 뉴스 보기</div>
+            <div class="sheet-title">Investment Briefing</div>
         </div>
-        
+
         <div class="sheet-content">
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value">$50B+</div>
+                    <div class="kpi-label">Planned Investment</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">300K+</div>
+                    <div class="kpi-label">Projected Residents</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">2028</div>
+                    <div class="kpi-label">Government Target</div>
+                </div>
+            </div>
+
             <div class="info-block">
                 <h2>📜 관련 법령 및 혜택 요약</h2>
                 <ul class="info-list">
@@ -173,12 +179,10 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
         crossorigin=""></script>
     <script>
-        // --- 1. 바텀 시트 토글 로직 ---
+        // --- 바텀 시트 토글 ---
         const bottomSheet = document.getElementById('bottomSheet');
         const sheetHeader = document.getElementById('sheetHeader');
         let isExpanded = false;
-
-        // 손잡이 부분을 클릭하면 열리고 닫히도록 설정
         sheetHeader.addEventListener('click', () => {
             isExpanded = !isExpanded;
             if (isExpanded) {
@@ -186,40 +190,45 @@
                 sheetHeader.querySelector('.sheet-title').innerText = "내려놓기 ▼";
             } else {
                 bottomSheet.classList.remove('expanded');
-                sheetHeader.querySelector('.sheet-title').innerText = "투자 정보 및 최신 뉴스 보기 ▲";
+                sheetHeader.querySelector('.sheet-title').innerText = "Investment Briefing";
             }
         });
 
-        // --- 2. Leaflet 지도 로직 ---
+        // --- 지도 ---
         const map = L.map('map', {
             center: [-0.844, 116.711],
             zoom: 13,
             minZoom: 11,
             maxZoom: 18,
-            zoomControl: false // 커스텀 위치를 위해 기본 숨김
+            zoomControl: false
         });
 
-        // 줌 컨트롤 우측 하단으로 (바텀 시트에 안 가리게 CSS로 bottom 조정됨)
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
+        // Dark MapTile
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution:'© OpenStreetMap © CARTO',
+            subdomains:'abcd',
+            maxZoom:19
         }).addTo(map);
 
-        // 마커 및 팝업 추가
+        // 아이콘
+        const govIcon = L.divIcon({ html: '🏛️', className: 'custom-icon', iconSize: [32,32] });
+        const investIcon = L.divIcon({ html: '💰', className: 'custom-icon', iconSize: [32,32] });
+        const infraIcon = L.divIcon({ html: '🏗️', className: 'custom-icon', iconSize: [32,32] });
+
+        // 마커
         const mockupData = [
-            { id: 1, name: "대통령궁 예정지", pos: [-0.836, 116.690], info: "1단계 개발 핵심 구역" },
-            { id: 2, name: "외국인 투자 1구역", pos: [-0.850, 116.710], info: "HGB 160년 보장 대상지" }
+            { id: 1, name: "대통령궁 예정지", pos: [-0.836, 116.690], info: "1단계 개발 핵심 구역", icon: govIcon },
+            { id: 2, name: "외국인 투자 1구역", pos: [-0.850, 116.710], info: "HGB 160년 보장 대상지", icon: investIcon }
         ];
 
         mockupData.forEach(item => {
-            L.marker(item.pos).addTo(map).bindPopup(`<b>${item.name}</b><br>${item.info}`);
+            L.marker(item.pos, {icon: item.icon}).addTo(map).bindPopup(`<b>${item.name}</b><br>${item.info}`);
         });
 
-        // 폴리곤 구역 추가
         L.rectangle([[-0.840, 116.685], [-0.860, 116.720]], {
-            color: "#ff7800", weight: 2, fillOpacity: 0.15
+            color: "#d4af37", weight: 2, fillOpacity: 0.15
         }).addTo(map).bindPopup("특별 경제 구역 예시");
     </script>
 </body>
